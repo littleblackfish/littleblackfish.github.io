@@ -1,7 +1,6 @@
 ---
 nav: wanderer
 title: mu the wanderer
-emoji: "🧭"
 tagline: Wandering around planet Earth.
 color: "#2f7d32"
 color_dark: "#7bd88f"

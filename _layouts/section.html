@@ -3,7 +3,6 @@ layout: default
 ---
 {%- assign note = page.note -%}
 <header class="section-hero">
-  <span class="section-emoji" aria-hidden="true">{{ note.emoji }}</span>
   <h1>{% include note-title.html note=note tag="span" class="squiggle" %}</h1>
   {%- if note.tagline %}
   <p class="tagline">{{ note.tagline }}</p>
@@ -22,7 +21,7 @@ layout: default
   <h2>Meet the other mus</h2>
   <ul>
     {%- for n in others %}
-    <li><a class="chip card-{{ n.class }}" href="{{ n.url | relative_url }}"><span aria-hidden="true">{{ n.emoji }}</span> {{ n.nav }}</a></li>
+    <li><a class="chip card-{{ n.class }}" href="{{ n.url | relative_url }}">{{ n.nav }}</a></li>
     {%- endfor %}
   </ul>
 </nav>

@@ -1,7 +1,6 @@
 ---
 nav: enginerd
 title: mu the enginerd
-emoji: "🛠️"
 tagline: Making and hacking things, for fun.
 color: "#c2410c"
 color_dark: "#fb923c"

@@ -29,7 +29,6 @@ require "uri"
 # This site's:
 #   nav          short label for the nav and "other" links (default: file name)
 #   title        page title (default: nav)
-#   emoji        shown on the card and the page (default: 🐟)
 #   tagline      one line under the title
 #   color        accent color in light mode
 #   color_dark   accent color in dark mode
@@ -114,7 +113,6 @@ module Vault
         "path"    => rel.delete_suffix(".md"),
         "nav"     => nav,
         "title"   => (props["title"] || nav).to_s,
-        "emoji"   => (props["emoji"] || "🐟").to_s,
         "tagline" => props["tagline"] || props["description"],
         "aliases" => Array(props["aliases"]).map(&:to_s),
         "src"     => "/#{dir}/#{file}",

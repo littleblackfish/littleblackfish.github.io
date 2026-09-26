@@ -1,7 +1,6 @@
 ---
 nav: scientist
 title: mu the scientist
-emoji: "🔬"
 tagline: Discovering order in nature.
 color: "#0b7a75"
 color_dark: "#4fd1c5"

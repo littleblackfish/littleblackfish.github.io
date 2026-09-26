@@ -1,7 +1,6 @@
 ---
 nav: teacher
 title: mu the teacher
-emoji: "🍎"
 tagline: Passing it on.
 color: "#6d28d9"
 color_dark: "#b69cff"

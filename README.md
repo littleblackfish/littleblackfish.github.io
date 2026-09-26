@@ -32,7 +32,6 @@ And this site's:
 ---
 nav: scientist                 # label in the nav and "other" links (default: file name)
 title: mu the scientist        # page title (default: nav)
-emoji: "🔬"                    # default: 🐟
 tagline: Discovering order in nature.
 color: "#0b7a75"               # accent color, light mode
 color_dark: "#4fd1c5"          # accent color, dark mode

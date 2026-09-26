@@ -18,7 +18,6 @@ body_class: home
     {%- for n in sections %}
     <li>
       <a class="card card-{{ n.class }}" href="{{ n.url | relative_url }}">
-        <span class="card-emoji" aria-hidden="true">{{ n.emoji }}</span>
         <span class="card-title">{% include note-title.html note=n tag="b" %}</span>
         {%- if n.tagline %}
         <span class="card-tagline">{{ n.tagline }}</span>
