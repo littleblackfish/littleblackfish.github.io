@@ -14,14 +14,12 @@ layout: default
   <noscript><p class="rsvp-error">This site reads out one word at a time, which needs JavaScript. <a href="{{ src }}">Read the plain text</a> instead.</p></noscript>
 </article>
 
-{%- include sections.html -%}
-{%- assign others = sections | where_exp: "n", "n.name != note.name" -%}
-{%- if others.size > 0 %}
-<nav class="others" aria-label="Other sections">
-  <h2>Meet the other mus</h2>
+{%- if note.backlinks.size > 0 %}
+<nav class="backlinks" aria-label="Linked from">
+  <h2>Linked from</h2>
   <ul>
-    {%- for n in others %}
-    <li><a class="chip card-{{ n.class }}" href="{{ n.url | relative_url }}">{{ n.nav }}</a></li>
+    {%- for b in note.backlinks %}
+    <li><a class="chip card-{{ b.class }}" href="{{ b.url | relative_url }}">{{ b.title }}</a></li>
     {%- endfor %}
   </ul>
 </nav>

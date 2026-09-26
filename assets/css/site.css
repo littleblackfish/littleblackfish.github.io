@@ -251,13 +251,13 @@ img { max-width: 100%; height: auto; display: block; }
 .prose figure img { border-radius: var(--radius); box-shadow: 8px 8px 0 color-mix(in srgb, var(--accent) 35%, var(--bg)); }
 .prose hr { margin: 2em 0; border: 0; border-top: 2px dashed var(--line); }
 
-.others {
+.backlinks {
   margin-top: 16px;
   padding-top: 24px;
   border-top: 2px dashed var(--line);
 }
-.others h2 { font-size: 1.2rem; }
-.others ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.backlinks h2 { font-size: 1.2rem; }
+.backlinks ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .chip {
   display: inline-block;
   padding: .35em .95em;

@@ -20,6 +20,9 @@ require "uri"
 # Attachments (images etc. in text/) are only published if a published note
 # links to or embeds them, so a draft's pictures stay private too.
 #
+# Each note also gets its backlinks (note.backlinks): the published notes that
+# link to or embed it, as Obsidian counts them.
+#
 # Properties, all optional. Obsidian Publish's own:
 #   publish      false = not published at all (no page, no file, links become plain text)
 #   permalink    page address instead of the file name, e.g. "cv" -> /cv
@@ -27,7 +30,7 @@ require "uri"
 #   description  meta description (and the tagline, if there is none)
 #   cssclasses   extra classes on the page's <body>
 # This site's:
-#   nav          short label for the nav and "other" links (default: file name)
+#   nav          short label for the nav (default: file name)
 #   title        page title (default: nav)
 #   tagline      one line under the title
 #   color        accent color in light mode
@@ -50,6 +53,7 @@ module Vault
       site.static_files.reject! { |f| note?(f.relative_path) }
 
       @refs = Set.new
+      @texts = {}
       notes = Dir.glob("**/*.md", :base => root).sort.filter_map do |rel|
         next if rel.split("/").any? { |part| part.start_with?(".", "_") } # .obsidian, .trash
 
@@ -57,8 +61,11 @@ module Vault
       end
       site.static_files.reject! { |f| attachment?(f.relative_path) && !referenced?(f.relative_path) }
 
-      site.data["notes"] = notes.sort_by { |n| [n["order"] || Float::INFINITY, n["name"].downcase] }
-      site.pages << manifest(site, notes)
+      notes = notes.sort_by { |n| [n["order"] || Float::INFINITY, n["name"].downcase] }
+      names = index(notes)
+      backlink(notes, names)
+      site.data["notes"] = notes
+      site.pages << manifest(site, names)
     end
 
     private
@@ -100,6 +107,7 @@ module Vault
       return if props["publish"] == false
 
       collect_refs(text)
+      @texts[rel] = text
       dir = File.join(DIR, File.dirname(rel)).chomp("/.")
       file = File.basename(rel)
       name = File.basename(rel, ".md")
@@ -133,21 +141,49 @@ module Vault
       note
     end
 
-    # Lookup tables for the reader, keyed the way Obsidian matches links:
-    # lower-cased note name, vault path or alias; attachment name or vault path.
-    def manifest(site, notes)
+    # Every published note under the keys Obsidian matches links by:
+    # lower-cased vault path, name and aliases.
+    def index(notes)
       names = {}
       notes.each do |n|
-        entry = { "url" => n["url"], "src" => n["src"], "title" => n["title"] }
-        keys = [n["path"], n["name"], *n["aliases"]].map(&:downcase)
-        keys.each do |k|
+        [n["path"], n["name"], *n["aliases"]].map(&:downcase).each do |k|
           if names.key?(k) && names[k]["src"] != n["src"]
             Jekyll.logger.warn "Vault:", "\"#{k}\" matches more than one note; links use #{names[k]["src"]}"
             next
           end
-          names[k] = entry
+          names[k] = n
         end
       end
+      names
+    end
+
+    def resolve(names, target)
+      key = (URI::DEFAULT_PARSER.unescape(target) rescue target).split("#").first.to_s.strip
+      key = key.delete_suffix(".md").downcase
+      names[key] || names[File.basename(key)]
+    end
+
+    # note.backlinks: the other published notes whose [[links]], ![[embeds]]
+    # or [text](note.md) links point at it, in site order.
+    def backlink(notes, names)
+      from = Hash.new { |h, k| h[k] = [] }
+      notes.each do |source|
+        text = @texts[source["path"] + ".md"]
+        targets = text.scan(%r!\[\[([^\]|]+)!).flatten +
+                  text.scan(%r!\]\(([^)\s]+)!).flatten.reject { |t| t.match?(%r!\A[a-z][a-z0-9+.-]*:|\A[/#]!i) }
+        targets.filter_map { |t| resolve(names, t) }.uniq.each do |target|
+          from[target["src"]] << source unless target["src"] == source["src"]
+        end
+      end
+      notes.each do |n|
+        n["backlinks"] = from[n["src"]].map { |s| { "url" => s["url"], "title" => s["title"], "class" => s["class"] } }
+      end
+    end
+
+    # Lookup tables for the reader, keyed the way Obsidian matches links:
+    # lower-cased note name, vault path or alias; attachment name or vault path.
+    def manifest(site, names)
+      names = names.transform_values { |n| { "url" => n["url"], "src" => n["src"], "title" => n["title"] } }
 
       files = {}
       site.static_files.each do |f|

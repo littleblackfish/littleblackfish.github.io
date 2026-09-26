@@ -10,8 +10,9 @@ GitHub's built-in Jekyll build would ignore the plugin.
 All the words live in `text/`, which is an Obsidian vault: open that folder
 with "Open folder as vault". `text/home.md` is the intro on the home page, and
 **every other note becomes its own section**: `text/reading-list.md` is served
-at `/reading-list` and shows up in the nav, on the home page cards and in
-the "other" links. Delete the note and the section is gone.
+at `/reading-list` and shows up in the nav and on the home page cards.
+Delete the note and the section is gone. Every section page lists its
+backlinks: the published notes that link to or embed it.
 
 A note's settings are native Obsidian properties, all optional. Obsidian
 Publish's own:
@@ -30,7 +31,7 @@ And this site's:
 
 ```yaml
 ---
-nav: scientist                 # label in the nav and "other" links (default: file name)
+nav: scientist                 # label in the nav (default: file name)
 title: mu the scientist        # page title (default: nav)
 tagline: Discovering order in nature.
 color: "#0b7a75"               # accent color, light mode
