@@ -405,6 +405,27 @@ img { max-width: 100%; height: auto; display: block; }
 .rsvp-quote .rsvp-stage { border-left: 4px solid var(--accent); }
 .rsvp-quote .rsvp-word { font-size: 1.9rem; font-style: italic; }
 
+/* Inline images flash over the stage in place of a word, without moving the page. */
+.rsvp-pic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  z-index: 3;
+  display: none;
+  pointer-events: none;
+}
+.rsvp.showing-image.playing .rsvp-pic,
+.rsvp.showing-image.peek .rsvp-pic { display: block; animation: pop .35s var(--bounce); }
+.rsvp.gap .rsvp-pic { display: none; }
+.rsvp-pic img {
+  display: block;
+  max-width: min(420px, 86vw);
+  max-height: 240px;
+  border-radius: 12px;
+  box-shadow: 0 0 0 3px var(--bg), 0 14px 34px -12px rgba(0, 0, 0, .45);
+}
+
 /* Links surface as chips once their words have gone by. */
 .rsvp-links { display: flex; flex-wrap: wrap; gap: 8px; }
 .rsvp-links:not(:empty) { margin-top: 14px; }
@@ -420,6 +441,10 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .rsvp-links a::after { content: " →"; color: var(--accent); }
 .rsvp-links a:hover { background: color-mix(in srgb, var(--accent) 16%, var(--bg)); }
+/* ...and images as thumbnails once they've been shown. */
+.rsvp-links a.rsvp-thumb { padding: 0; overflow: hidden; border-radius: 10px; line-height: 0; }
+.rsvp-links a.rsvp-thumb::after { content: none; }
+.rsvp-thumb img { display: block; width: auto; height: 44px; }
 @keyframes pop { from { transform: scale(.4); opacity: 0; } }
 
 .rsvp-error { color: var(--muted); font-style: italic; }

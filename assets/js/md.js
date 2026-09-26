@@ -2,7 +2,7 @@
 // It only understands what the RSVP reader needs: headings, paragraphs, quotes
 // (and callouts), lists, images, note embeds, rules, links, [[wikilinks]] and
 // emphasis. Output is a list of blocks; inline text is a list of runs:
-//   {text, href, strong, em, code}
+//   {text, href, strong, em, code}, or {image, text: alt} for an inline image
 //
 // Links resolve like Obsidian's when given the vault index (/assets/vault.json,
 // built by _plugins/vault.rb): case-insensitive, by note name, vault path or
@@ -45,37 +45,51 @@
   }
 
   var INLINE = new RegExp([
-    /\[\[([^\]|#]+)(?:#([^\]|]*))?(?:\|([^\]]+))?\]\]/.source, // 1-3 wikilink
-    /\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/.source,          // 4-5 link
-    /\*\*(.+?)\*\*/.source,                                      // 6 strong
-    /__(.+?)__/.source,                                          // 7 strong
-    /\*([^*\s](?:[^*]*[^*\s])?)\*/.source,                       // 8 em
-    /(?<![\p{L}\p{N}])_([^_\s](?:[^_]*[^_\s])?)_(?![\p{L}\p{N}])/.source, // 9 em
-    /==(.+?)==/.source,                                          // 10 highlight
-    /`([^`]+)`/.source                                           // 11 code
+    /!\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/.source,   // 1-2 embed ![[x|alt]]
+    /!\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/.source,          // 3-4 image ![alt](x)
+    /\[\[([^\]|#]+)(?:#([^\]|]*))?(?:\|([^\]]+))?\]\]/.source, // 5-7 wikilink
+    /\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/.source,          // 8-9 link
+    /\*\*(.+?)\*\*/.source,                                      // 10 strong
+    /__(.+?)__/.source,                                          // 11 strong
+    /\*([^*\s](?:[^*]*[^*\s])?)\*/.source,                       // 12 em
+    /(?<![\p{L}\p{N}])_([^_\s](?:[^_]*[^_\s])?)_(?![\p{L}\p{N}])/.source, // 13 em
+    /==(.+?)==/.source,                                          // 14 highlight
+    /`([^`]+)`/.source                                           // 15 code
   ].join("|"), "gu");
 
+  // An inline image run, or null if the file isn't there. Obsidian's ![[x|300]]
+  // sizes aren't alt text.
+  function imageRun(target, alt, vault) {
+    var src = IMAGE.test(target.trim()) && fileFor(target, vault);
+    return src ? { image: src, text: alt && !/^\d+(x\d+)?$/.test(alt) ? alt : "" } : null;
+  }
+
   function inline(text, vault) {
-    // Inline embeds have no place in a word stream.
-    text = text.replace(/!\[\[[^\]]*\]\]|!\[[^\]]*\]\([^)]*\)/g, " ");
     var runs = [];
     var last = 0;
     var m;
     INLINE.lastIndex = 0;
     while ((m = INLINE.exec(text))) {
       if (m.index > last) runs.push({ text: text.slice(last, m.index) });
-      if (m[1]) {
-        var label = m[3] || (m[2] ? m[1] + " › " + m[2] : m[1]);
-        var note = noteFor(m[1], vault);
-        runs.push(note ? { text: label, href: noteHref(note, m[2]) } : { text: label });
-      } else if (m[4]) {
-        runs.push({ text: m[4], href: linkHref(m[5], vault) });
-      } else if (m[6] || m[7] || m[10]) {
-        runs.push({ text: m[6] || m[7] || m[10], strong: true });
-      } else if (m[8] || m[9]) {
-        runs.push({ text: m[8] || m[9], em: true });
-      } else if (m[11]) {
-        runs.push({ text: m[11], code: true });
+      var img = m[1] ? imageRun(m[1], m[2], vault) : m[4] ? imageRun(m[4], m[3], vault) : null;
+      if (img) {
+        runs.push(img);
+      } else if (m[1] || m[4]) {
+        // Not an image (or not found): an inline note embed reads as a link to it.
+        var embedded = m[1] && noteFor(m[1], vault);
+        if (embedded) runs.push({ text: embedded.title || m[1], href: embedded.url });
+      } else if (m[5]) {
+        var label = m[7] || (m[6] ? m[5] + " › " + m[6] : m[5]);
+        var note = noteFor(m[5], vault);
+        runs.push(note ? { text: label, href: noteHref(note, m[6]) } : { text: label });
+      } else if (m[8]) {
+        runs.push({ text: m[8], href: linkHref(m[9], vault) });
+      } else if (m[10] || m[11] || m[14]) {
+        runs.push({ text: m[10] || m[11] || m[14], strong: true });
+      } else if (m[12] || m[13]) {
+        runs.push({ text: m[12] || m[13], em: true });
+      } else if (m[15]) {
+        runs.push({ text: m[15], code: true });
       }
       last = INLINE.lastIndex;
     }

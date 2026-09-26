@@ -55,6 +55,13 @@
   // Runs -> real inline HTML (headings, and the screen-reader copy of each block).
   function renderRuns(parent, runs, focusable) {
     runs.forEach(function (r) {
+      if (r.image) {
+        var img = el("img");
+        img.src = r.image;
+        img.alt = r.text;
+        parent.appendChild(img);
+        return;
+      }
       var node = r.href ? link(r.href, r.text) : r.strong ? el("strong", null, r.text) :
         r.em ? el("em", null, r.text) : r.code ? el("code", null, r.text) : document.createTextNode(r.text);
       if (r.href && !focusable) node.tabIndex = -1;
@@ -89,6 +96,12 @@
     var out = [];
     var open = null;
     runs.forEach(function (r) {
+      if (r.image) {
+        // An inline image is a token of its own; it flashes in place of a word.
+        out.push({ w: "", image: r.image, alt: r.text });
+        open = null;
+        return;
+      }
       r.text.split(/(\s+)/).forEach(function (part) {
         if (!part) return;
         if (/^\s+$/.test(part)) { open = null; return; }
@@ -161,6 +174,8 @@
   var RAMP = [1.8, 1.4, 1.15];
 
   function delay(t, ramp) {
+    // Images get a beat to be seen: ~1.5 s at 350 wpm, never under a second.
+    if (t.image) return Math.max(1000, 60000 / wpm * 9);
     var d = 60000 / wpm;
     if (t.len > 8) d *= 1.2;
     if (t.len > 11) d *= 1.25;
@@ -230,7 +245,13 @@
     speed.append(slower, rate, faster);
     var bar = el("div", "rsvp-bar");
     bar.appendChild(el("span"));
-    stage.append(word, hint, meta, speed, bar);
+    var pic = el("div", "rsvp-pic");
+    var picImg = el("img");
+    pic.appendChild(picImg);
+    stage.append(word, hint, pic, meta, speed, bar);
+
+    // Load the section's images up front so they flash in without a delay.
+    tokens.forEach(function (t) { if (t.image) new Image().src = t.image; });
 
     // Links are revealed as chips once their words have flashed by.
     var chips = el("div", "rsvp-links");
@@ -242,6 +263,20 @@
       if (revealed[href]) return;
       revealed[href] = true;
       chips.appendChild(link(href, label));
+    }
+
+    // Images, like links, stay behind as a thumbnail once they've been shown.
+    function revealImage(src, alt) {
+      if (revealed["img:" + src]) return;
+      revealed["img:" + src] = true;
+      var a = link(src, "");
+      a.className = "rsvp-thumb";
+      a.target = "_blank";
+      var img = el("img");
+      img.src = src;
+      img.alt = alt;
+      a.appendChild(img);
+      chips.appendChild(a);
     }
 
     // The title is shown whole, so links in it are available straight away.
@@ -259,6 +294,17 @@
 
     function show(k) {
       var t = tokens[k];
+      root.classList.toggle("showing-image", !!t.image);
+      if (t.image) {
+        root.classList.remove("gap");
+        picImg.src = t.image;
+        picImg.alt = t.alt;
+        left.textContent = mid.textContent = right.textContent = "";
+        setProgress((k + 1) / n);
+        revealImage(t.image, t.alt);
+        cur = k;
+        return;
+      }
       var p = pivot(t.len);
       var lead = t.w.length - t.w.replace(/^[^\p{L}\p{N}]+/u, "").length;
       var at = Math.min(t.w.length - 1, lead + p);

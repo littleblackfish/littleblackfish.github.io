@@ -50,6 +50,9 @@ Links work like in Obsidian: `[[Note]]`, `[[folder/Note]]`, `[[alias]]`,
 links like `[label](Note.md)`. Links to notes that don't exist or aren't
 published show as plain text. `![[photo.jpg]]` finds the image anywhere in the
 vault, and `![[Note]]` or `![[Note#Heading]]` embeds that note (or section).
+An image inside a paragraph (`... the ![[boat.jpg]] out ...`) flashes in the
+reader in place of a word, then stays below it as a thumbnail; an image on a
+line of its own is shown normally between readers.
 
 The site reads the notes as they are and plays them through the RSVP reader
 (`assets/js/rsvp.js`): headings and images show normally, and every paragraph,
