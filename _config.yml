@@ -1,0 +1,21 @@
+title: littleblack.fish
+author: mu
+description: mu's little corner of the internet.
+url: https://littleblack.fish
+
+github_username: littleblackfish
+linkedin_username: littleblackfish
+email_user: hello
+email_domain: littleblack.fish
+
+markdown: kramdown
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+  - .bundle
+
+# text/ is an Obsidian vault, handled by _plugins/vault.rb: notes are served
+# as-is and each gets a section page built from its properties.

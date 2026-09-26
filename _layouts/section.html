@@ -1,0 +1,29 @@
+---
+layout: default
+---
+{%- assign note = page.note -%}
+<header class="section-hero">
+  <span class="section-emoji" aria-hidden="true">{{ note.emoji }}</span>
+  <h1>{% include note-title.html note=note tag="span" class="squiggle" %}</h1>
+  {%- if note.tagline %}
+  <p class="tagline">{{ note.tagline }}</p>
+  {%- endif %}
+</header>
+
+{%- assign src = note.src | relative_url %}
+<article class="prose" data-src="{{ src }}">
+  <noscript><p class="rsvp-error">This site reads out one word at a time, which needs JavaScript. <a href="{{ src }}">Read the plain text</a> instead.</p></noscript>
+</article>
+
+{%- include sections.html -%}
+{%- assign others = sections | where_exp: "n", "n.name != note.name" -%}
+{%- if others.size > 0 %}
+<nav class="others" aria-label="Other sections">
+  <h2>Meet the other mus</h2>
+  <ul>
+    {%- for n in others %}
+    <li><a class="chip card-{{ n.class }}" href="{{ n.url | relative_url }}"><span aria-hidden="true">{{ n.emoji }}</span> {{ n.nav }}</a></li>
+    {%- endfor %}
+  </ul>
+</nav>
+{%- endif %}

@@ -1,0 +1,31 @@
+---
+layout: default
+title: mu the human
+body_class: home
+---
+<h1 class="sr-only">mu the human</h1>
+
+{%- assign home = site.data.notes | where: "name", "home" | first %}
+{%- assign src = home.src | default: "/text/home.md" | relative_url %}
+<div class="intro" data-src="{{ src }}">
+  <noscript><p class="rsvp-error">This site reads out one word at a time, which needs JavaScript. <a href="{{ src }}">Read the plain text</a> instead.</p></noscript>
+</div>
+
+<section class="sections" aria-labelledby="sections-heading">
+  <h2 id="sections-heading">Pick a mu</h2>
+  <ul class="cards">
+    {%- include sections.html -%}
+    {%- for n in sections %}
+    <li>
+      <a class="card card-{{ n.class }}" href="{{ n.url | relative_url }}">
+        <span class="card-emoji" aria-hidden="true">{{ n.emoji }}</span>
+        <span class="card-title">{% include note-title.html note=n tag="b" %}</span>
+        {%- if n.tagline %}
+        <span class="card-tagline">{{ n.tagline }}</span>
+        {%- endif %}
+        <span class="card-go" aria-hidden="true">→</span>
+      </a>
+    </li>
+    {%- endfor %}
+  </ul>
+</section>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+{%- if page.note -%}
+  {%- assign current_section = page.note.name -%}
+  {%- assign page_title = page.note.title -%}
+  {%- capture body_class %}section-{{ page.note.class }} {{ page.note.cssclasses | join: " " }}{% endcapture -%}
+{%- else -%}
+  {%- assign page_title = page.title -%}
+  {%- assign body_class = page.body_class -%}
+{%- endif %}
+{% include head.html %}
+<body class="{{ body_class }}">
+  {% include header.html %}
+  <main id="main" class="wrap">
+    {{ content }}
+  </main>
+  {% include footer.html %}
+  <script src="{{ '/assets/js/site.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/md.js' | relative_url }}" defer></script>
+  <script src="{{ '/assets/js/rsvp.js' | relative_url }}" defer></script>
+</body>
+</html>

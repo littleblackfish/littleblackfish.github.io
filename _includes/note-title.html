@@ -1,0 +1,14 @@
+{%- comment -%}
+  A note's title with its nav label wrapped in <include.tag class="include.class">,
+  e.g. "mu the <b>scientist</b>". Wraps the whole title if the label isn't in it.
+{%- endcomment -%}
+{%- assign t = include.note.title | escape -%}
+{%- assign l = include.note.nav | escape -%}
+{%- capture open %}<{{ include.tag }}{% if include.class %} class="{{ include.class }}"{% endif %}>{% endcapture -%}
+{%- capture close %}</{{ include.tag }}>{% endcapture -%}
+{%- if t contains l -%}
+  {%- capture wrapped %}{{ open }}{{ l }}{{ close }}{% endcapture -%}
+  {{- t | replace_first: l, wrapped -}}
+{%- else -%}
+  {{- open }}{{ t }}{{ close -}}
+{%- endif -%}
