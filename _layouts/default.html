@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 {%- if page.note -%}
-  {%- assign current_section = page.note.name -%}
   {%- assign page_title = page.note.title -%}
   {%- capture body_class %}section-{{ page.note.class }} {{ page.note.cssclasses | join: " " }}{% endcapture -%}
 {%- else -%}

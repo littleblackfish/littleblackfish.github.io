@@ -21,7 +21,7 @@
 }
 
 {% for n in site.data.notes %}{% if n.color -%}
-.section-{{ n.class }}, .card-{{ n.class }}, .nav-{{ n.class }} { --accent: {{ n.color }}; }
+.section-{{ n.class }}, .card-{{ n.class }} { --accent: {{ n.color }}; }
 {% endif %}{% endfor %}
 
 @media (prefers-color-scheme: dark) {
@@ -38,7 +38,7 @@
     --accent: #5ccfd9;
   }
   {% for n in site.data.notes %}{% if n.color_dark -%}
-  .section-{{ n.class }}, .card-{{ n.class }}, .nav-{{ n.class }} { --accent: {{ n.color_dark }}; }
+  .section-{{ n.class }}, .card-{{ n.class }} { --accent: {{ n.color_dark }}; }
   {% endif %}{% endfor %}
 }
 
@@ -60,13 +60,14 @@ body {
 
 main { flex: 1; width: 100%; }
 
+/* One centered reading-width column for the header, content and footer. */
 .wrap {
   width: 100%;
-  max-width: 1040px;
+  max-width: calc(68ch + 32px);
   margin: 0 auto;
   padding: 0 16px;
 }
-@media (min-width: 600px) { .wrap { padding: 0 24px; } }
+@media (min-width: 600px) { .wrap { max-width: calc(68ch + 48px); padding: 0 24px; } }
 
 h1, h2, h3 {
   font-family: var(--font-display);
@@ -135,37 +136,6 @@ img { max-width: 100%; height: auto; display: block; }
 .brand:hover .fish-tail { animation: wag .35s ease-in-out 3; }
 .brand-dot { color: var(--accent); }
 
-.site-header nav ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.site-header nav a {
-  position: relative;
-  display: inline-block;
-  padding: 4px 0;
-  color: var(--ink);
-  font-weight: 600;
-  text-decoration: none;
-}
-.site-header nav a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 3px;
-  border-radius: 3px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .3s var(--bounce);
-}
-.site-header nav a:hover::after,
-.site-header nav a[aria-current="page"]::after { transform: scaleX(1); }
 
 .wave {
   position: absolute;
@@ -234,7 +204,7 @@ img { max-width: 100%; height: auto; display: block; }
 .section-hero h1 { font-size: clamp(2.2rem, 6.5vw, 3.8rem); font-weight: 800; }
 .tagline { margin: 0; color: var(--muted); font-size: 1.2rem; }
 
-.prose { max-width: 68ch; padding: 16px 0 24px; }
+.prose { padding: 16px 0 24px; }
 .prose h2 { margin-top: 1.8em; font-size: 1.6rem; }
 .prose h2::before {
   content: "";
@@ -379,7 +349,6 @@ img { max-width: 100%; height: auto; display: block; }
   cursor: pointer;
 }
 .rsvp-speed button:hover { border-color: var(--accent); color: var(--accent); }
-@media (hover: none) { .rsvp.playing .rsvp-speed, .rsvp.peek .rsvp-speed { opacity: 1; } }
 
 .rsvp-bar {
   position: absolute;
@@ -464,7 +433,21 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .embed-source::before { content: "↪ "; color: var(--accent); }
 .embed-source:hover { color: var(--accent); }
-.intro { max-width: 68ch; padding-top: 16px; }
+.intro { padding-top: 16px; }
+
+/* Touch screens: controls big enough for a finger (about 44px, the usual guideline). */
+@media (hover: none) {
+  .rsvp.playing .rsvp-speed, .rsvp.peek .rsvp-speed { opacity: 1; }
+  .rsvp-stage { padding-top: 30px; } /* room for the speed buttons above the word */
+  .rsvp-hint { margin-top: -30px; }  /* ...but keep the resting title centered in the box */
+  .rsvp-speed { top: 4px; gap: 4px; }
+  .rsvp-speed button { position: relative; width: 30px; height: 30px; font-size: 1.05rem; }
+  .rsvp-speed button::after { content: ""; position: absolute; inset: -7px; }
+  /* A taller hit area for the progress bar; the line itself stays where it was. */
+  .rsvp-bar { bottom: -20px; height: 40px; }
+  .rsvp-bar span { top: 19px; }
+  .rsvp-links:not(:empty) { margin-top: 26px; }
+}
 
 /* ---------- 404 ---------- */
 .lost-at-sea { padding: 40px 0 24px; text-align: center; }
@@ -488,8 +471,7 @@ img { max-width: 100%; height: auto; display: block; }
 /* ---------- footer ---------- */
 .site-footer {
   margin-top: 64px;
-  padding: 28px 0 40px;
-  border-top: 2px dashed var(--line);
+  padding: 0 0 40px;
 }
 .footer-row {
   display: flex;
@@ -497,6 +479,8 @@ img { max-width: 100%; height: auto; display: block; }
   align-items: center;
   justify-content: space-between;
   gap: 12px 24px;
+  padding-top: 28px;
+  border-top: 2px dashed var(--line);
 }
 .social { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; padding: 0; list-style: none; }
 .social a {

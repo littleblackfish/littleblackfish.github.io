@@ -17,6 +17,14 @@
   var MIN_WPM = 100;
   var MAX_WPM = 900;
   var readers = [];
+
+  // A reader that scrolls off screen pauses, so nothing plays unseen.
+  var visibility = "IntersectionObserver" in window && new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) return;
+      readers.forEach(function (r) { if (r.el === e.target) r.pause(); });
+    });
+  });
   var wpm = loadWpm() || (reduceMotion ? 250 : 350);
 
   // How the visitor last interacted, so focus only auto-plays for keyboard users.
@@ -342,6 +350,8 @@
 
     function play() {
       if (playing || !n) return;
+      // One reader at a time: starting this one pauses any other.
+      readers.forEach(function (r) { if (r !== self) r.pause(); });
       playing = true;
       root.classList.add("playing");
       root.classList.remove("peek");
@@ -388,8 +398,10 @@
       rate.textContent = wpm + " wpm";
       when.textContent = (touch ? "tap to read" : "hover to read") + " · " + duration(tokens);
     };
+    var self = this;
     this.pause = pause;
     this.el = root;
+    if (visibility) visibility.observe(root);
     this.refresh();
 
     root.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") play(); });

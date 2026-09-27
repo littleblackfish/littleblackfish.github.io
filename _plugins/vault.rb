@@ -30,13 +30,13 @@ require "uri"
 #   description  meta description (and the tagline, if there is none)
 #   cssclasses   extra classes on the page's <body>
 # This site's:
-#   nav          short label for the nav (default: file name)
+#   nav          short label, highlighted in the title (default: file name)
 #   title        page title (default: nav)
 #   tagline      one line under the title
 #   color        accent color in light mode
 #   color_dark   accent color in dark mode
-#   order        position in the nav and on the home page (lower first)
-#   hidden       true = published and linkable, but no nav entry or card
+#   order        position among the home page cards (lower first)
+#   hidden       true = published and linkable, but no card on the home page
 module Vault
   DIR = "text"
 

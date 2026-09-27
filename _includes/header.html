@@ -2,14 +2,6 @@
 <header class="site-header">
   <div class="wrap header-row">
     <a class="brand" href="{{ '/' | relative_url }}">{% include fish.svg %}<span>littleblack<span class="brand-dot">.</span>fish</span></a>
-    <nav aria-label="Main">
-      <ul>
-        {%- include sections.html -%}
-        {%- for n in sections %}
-        <li><a class="nav-{{ n.class }}" href="{{ n.url | relative_url }}"{% if current_section == n.name %} aria-current="page"{% endif %}>{{ n.nav }}</a></li>
-        {%- endfor %}
-      </ul>
-    </nav>
   </div>
   <svg class="wave" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M0 24 C 180 48 360 0 540 20 S 900 44 1080 22 S 1320 4 1440 20 V48 H0 Z"/></svg>
 </header>

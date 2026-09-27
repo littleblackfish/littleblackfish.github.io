@@ -1,5 +1,5 @@
 {%- comment -%}
-  Sets `sections`: the notes that get a card and a nav entry, in order.
+  Sets `sections`: the notes that get a card on the home page, in order.
   site.data.notes comes from _plugins/vault.rb (each note's properties).
 {%- endcomment -%}
 {%- assign sections = site.data.notes | where_exp: "n", "n.hidden != true" | where_exp: "n", "n.name != 'home'" -%}
